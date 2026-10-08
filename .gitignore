@@ -1,0 +1,7 @@
+node_modules/
+test-results/
+dist/
+*.zip
+.env
+.env.*
+!.env.example
