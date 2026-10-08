@@ -3,6 +3,10 @@ html[data-wcs-active] [data-wcs-column] {
   width: var(--wcs-width, 88px) !important;
   min-width: var(--wcs-width, 88px) !important;
   max-width: var(--wcs-width, 88px) !important;
+}
+/* flex-basis only on the outermost column (a child of the horizontal app row). Inside the
+   column WhatsApp stacks header and #side vertically, where flex-basis would set the HEIGHT. */
+html[data-wcs-active] [data-wcs-column-outer] {
   flex-basis: var(--wcs-width, 88px) !important;
   flex-grow: 0 !important;
   flex-shrink: 0 !important;
@@ -12,6 +16,9 @@ html[data-wcs-active] [data-wcs-side] {
   padding-top: 54px !important;
 }
 html[data-wcs-active] [data-wcs-hide] { display: none !important; }
+/* WhatsApp keeps a transparent drawer panel over the chat whose left border used to sit behind the
+   wide list. With the narrow list it shows up as a vertical line across the conversation. */
+html[data-wcs-active] [data-testid="drawer-middle"] { border-left-color: transparent !important; }
 html[data-wcs-active] #pane-side { overflow-x: hidden !important; scrollbar-width: thin; }
 html[data-wcs-active] [data-wcs-position] { position: relative !important; }
 html[data-wcs-active] [data-wcs-row] { min-width: 0 !important; }

@@ -35,6 +35,12 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     const active = () => page.waitForFunction(() => document.documentElement.hasAttribute('data-wcs-active'));
     await active();
     assert.equal(await page.locator('.column').evaluate(el => el.getBoundingClientRect().width), 88);
+    // The list keeps the full height (flex-basis must not turn into a height inside the column).
+    assert.ok(await page.locator('#pane-side').evaluate(el => el.getBoundingClientRect().height) > 600);
+    // The list header beside #side is hidden in compact mode, so nothing spills over the chat.
+    assert.equal(await page.locator('[data-testid="chatlist-header"]').isVisible(), false);
+    // The empty drawer's left border must not draw a line across the conversation.
+    assert.equal(await page.locator('[data-testid="drawer-middle"]').evaluate(el => getComputedStyle(el).borderLeftColor), 'rgba(0, 0, 0, 0)');
     assert.equal(await page.locator('[data-wcs-row]').count(), 20);
     assert.equal(await page.locator('[data-contact="1"] .wcs-badge').textContent(), '2');
     assert.equal(await page.locator('[data-contact="0"]').evaluate(el => el.getBoundingClientRect().height), 72);
@@ -58,6 +64,7 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     await page.getByRole('button', { name: 'Expandir conversas', exact: true }).click();
     await page.waitForFunction(() => !document.documentElement.hasAttribute('data-wcs-active'));
     assert.equal(await page.locator('.column').evaluate(el => el.getBoundingClientRect().width), 370);
+    assert.equal(await page.locator('[data-testid="chatlist-header"]').isVisible(), true);
     assert.equal(await page.locator('.wcs-avatar-overlay').count(), 0);
     assert.equal(await page.locator('[data-contact="4"]').getAttribute('title'), null);
     await page.screenshot({ path: new URL('test-results/expanded.png', root).pathname.replace(/^\/(\w:)/, '$1') });

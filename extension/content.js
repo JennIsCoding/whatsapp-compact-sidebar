@@ -50,6 +50,7 @@
     hidden.clear();
     for (const el of columns) el.removeAttribute('data-wcs-column');
     columns.clear();
+    column?.removeAttribute('data-wcs-column-outer');
     side?.removeAttribute('data-wcs-side');
   }
 
@@ -186,12 +187,22 @@
           node.setAttribute('data-wcs-column', ''); columns.add(node);
           if (node === column) break;
         }
+        column.setAttribute('data-wcs-column-outer', '');
         // Hide only branches outside the list; keep its scroll/virtualization tree intact.
         for (const el of hidden) el.removeAttribute('data-wcs-hide');
         hidden.clear();
         for (let node = pane; node !== side && node.parentElement; node = node.parentElement) {
           for (const sibling of node.parentElement.children) {
             if (sibling !== node) { sibling.setAttribute('data-wcs-hide', ''); hidden.add(sibling); }
+          }
+        }
+        // Current WhatsApp puts the list header (title, new chat, menu) beside #side, inside the
+        // column. It does not fit in the compact width, so hide it too (» brings it back).
+        for (let node = side; node !== column && node.parentElement; node = node.parentElement) {
+          for (const sibling of node.parentElement.children) {
+            if (sibling !== node && !sibling.querySelector('#main') && !sibling.hasAttribute('data-wcs-owned')) {
+              sibling.setAttribute('data-wcs-hide', ''); hidden.add(sibling);
+            }
           }
         }
         const current = new Set(rows);
