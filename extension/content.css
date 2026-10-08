@@ -1,0 +1,44 @@
+/* All changes are scoped and reversible. Never change virtualized row heights. */
+html[data-wcs-active] [data-wcs-column] {
+  width: var(--wcs-width, 88px) !important;
+  min-width: var(--wcs-width, 88px) !important;
+  max-width: var(--wcs-width, 88px) !important;
+  flex-basis: var(--wcs-width, 88px) !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+}
+html[data-wcs-active] [data-wcs-side] {
+  box-sizing: border-box !important;
+  padding-top: 54px !important;
+}
+html[data-wcs-active] [data-wcs-hide] { display: none !important; }
+html[data-wcs-active] #pane-side { overflow-x: hidden !important; scrollbar-width: thin; }
+html[data-wcs-active] [data-wcs-position] { position: relative !important; }
+html[data-wcs-active] [data-wcs-row] { min-width: 0 !important; }
+/* Retain native hit targets, event handlers and accessibility labels. */
+html[data-wcs-active] [data-wcs-row] > :not([data-wcs-owned]) { opacity: 0 !important; }
+.wcs-avatar-overlay {
+  position: absolute !important; inset: 0 !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  pointer-events: none !important; z-index: 2;
+}
+.wcs-avatar {
+  position: relative; display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 50%; overflow: hidden;
+  background: #dae7e2; color: #245747; font: 600 15px system-ui, sans-serif;
+}
+.wcs-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.wcs-badge {
+  position: absolute; top: calc(50% - 28px); left: calc(50% + 6px);
+  min-width: 21px; height: 21px; padding: 0 4px; box-sizing: border-box;
+  display: grid; place-items: center; border: 2px solid var(--background-default, #fff);
+  border-radius: 14px; background: #008b64; color: white;
+  font: 700 10px system-ui, sans-serif; box-shadow: 0 1px 4px #0002;
+}
+.wcs-badge[hidden] { display: none !important; }
+html[data-wcs-active] [data-wcs-row]:hover .wcs-avatar,
+html[data-wcs-active] [data-wcs-row]:focus-within .wcs-avatar { outline: 2px solid #32b99a; outline-offset: 3px; }
+html[data-wcs-active] [data-wcs-selected] .wcs-avatar { outline: 3px solid #008b64; outline-offset: 3px; }
+@media (prefers-color-scheme: dark) {
+  .wcs-avatar { background: #294039; color: #daf7ea; }
+}

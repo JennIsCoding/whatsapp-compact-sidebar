@@ -3,25 +3,15 @@
   "name": "WhatsApp Compact Sidebar",
   "version": "0.1.0",
   "description": "Mais espaço para conversar: lateral com avatares e contadores de não lidas. Por JennIsCoding.",
-  "permissions": [
-    "storage"
-  ],
+  "permissions": ["storage"],
   "action": {
     "default_title": "WhatsApp Compact Sidebar",
     "default_popup": "popup.html"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "https://web.whatsapp.com/*"
-      ],
-      "js": [
-        "content.js"
-      ],
-      "css": [
-        "content.css"
-      ],
-      "run_at": "document_idle"
-    }
-  ]
+  "content_scripts": [{
+    "matches": ["https://web.whatsapp.com/*"],
+    "js": ["content.js"],
+    "css": ["content.css"],
+    "run_at": "document_idle"
+  }]
 }

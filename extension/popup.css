@@ -1,0 +1,22 @@
+:root { color-scheme: light dark; font: 14px/1.5 system-ui,sans-serif; }
+* { box-sizing: border-box; }
+body { width: 320px; margin: 0; background: #f8faf9; color: #19382e; }
+header { display: flex; align-items: center; gap: 16px; padding: 24px; background: #e4f3eb; }
+.symbol { font-size: 40px; color: #00775d; }
+h1 { font-size: 20px; line-height: 1.25; letter-spacing: -.6px; margin: 0 0 7px; }
+header p { font-size: 11px; margin: 0; color: #426559; }
+main { padding: 12px 24px; }
+.option { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; cursor: pointer; }
+input { accent-color: #008b64; width: 18px; height: 18px; }
+.width { display: block; margin: 14px 0 6px; font-weight: 600; }
+select { width: 100%; padding: 9px; border: 1px solid #9ab8aa; border-radius: 8px; background: transparent; color: inherit; }
+.hint { font-size: 12px; color: #506a60; margin-top: 20px; }
+kbd { font: 11px system-ui; border: 1px solid #b5c8bd; border-radius: 3px; padding: 1px 3px; }
+#status { min-height: 18px; color: #00775d; font-size: 12px; }
+footer { padding: 14px 24px 20px; font-size: 11px; color: #506a60; border-top: 1px solid #dfe9e3; }
+:focus-visible { outline: 3px solid #008b64; outline-offset: 3px; }
+@media (prefers-color-scheme: dark) {
+  body { background: #15241e; color: #eef7f1; } header { background: #213c30; }
+  header p,.hint,footer { color: #b3cbbb; } .symbol,#status { color: #76d8ad; }
+  select { background: #15241e; } footer { border-color: #32493d; }
+}
