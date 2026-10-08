@@ -43,7 +43,26 @@
     }
   }
 
+  const ARCHIVED = '[data-testid="chatlist-panel-archived-button"]';
+  let archivedShift = 0;
+
+  // Centre the "Arquivadas" icon on the same line as the avatars. WhatsApp's own margins and
+  // paddings around it change between versions, so measure instead of hard-coding them.
+  function alignArchived() {
+    const button = pane.querySelector(ARCHIVED);
+    const icon = button?.querySelector('svg, [data-icon]');
+    const avatar = [...records.values()].map(r => r.avatar).find(a => a.isConnected && a.getClientRects().length);
+    if (!button || !icon || !avatar) return;
+    const centre = el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; };
+    const shift = Math.round((archivedShift + centre(avatar) - centre(icon)) * 10) / 10;
+    if (Math.abs(shift - archivedShift) < 0.5) return;
+    archivedShift = shift;
+    button.style.setProperty('--wcs-archived-shift', `${shift}px`);
+  }
+
   function restore() {
+    archivedShift = 0;
+    document.querySelectorAll(ARCHIVED).forEach(el => el.style.removeProperty('--wcs-archived-shift'));
     document.documentElement.removeAttribute('data-wcs-active');
     for (const [row, record] of records) cleanRow(row, record);
     records.clear();
@@ -187,6 +206,7 @@
           if (!current.has(row)) { cleanRow(row, record); records.delete(row); }
         }
         rows.forEach(updateRow);
+        alignArchived();
       }
     } finally { observe(); }
   }
