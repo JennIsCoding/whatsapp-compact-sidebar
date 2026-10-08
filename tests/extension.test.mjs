@@ -42,6 +42,9 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     // The empty drawer's left border must not draw a line across the conversation.
     assert.equal(await page.locator('[data-testid="drawer-middle"]').evaluate(el => getComputedStyle(el).borderLeftColor), 'rgba(0, 0, 0, 0)');
     assert.equal(await page.locator('[data-wcs-row]').count(), 20);
+    // The archived button shows only its icon, centred in the list like the avatars.
+    const centre = sel => page.locator(sel).evaluate(el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; });
+    assert.ok(Math.abs(await centre('#archived-icon') - await centre('[data-contact="0"] .wcs-avatar')) <= 1);
     assert.equal(await page.locator('[data-contact="1"] .wcs-badge').textContent(), '2');
     assert.equal(await page.locator('[data-contact="0"]').evaluate(el => el.getBoundingClientRect().height), 72);
     assert.equal(await page.locator('#main').evaluate(el => el.getBoundingClientRect().width), 1132);

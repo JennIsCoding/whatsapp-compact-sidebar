@@ -19,6 +19,15 @@ html[data-wcs-active] [data-wcs-hide] { display: none !important; }
 /* WhatsApp keeps a transparent drawer panel over the chat whose left border used to sit behind the
    wide list. With the narrow list it shows up as a vertical line across the conversation. */
 html[data-wcs-active] [data-testid="drawer-middle"] { border-left-color: transparent !important; }
+/* "Arquivadas" button at the top of the list: keep only the icon, centred like the avatars. */
+html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] { width: 100% !important; }
+html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] [data-testid="cell-frame-container"] {
+  width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; justify-content: center !important;
+}
+html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] [data-testid="cell-frame-container"] > :not(:first-child) { display: none !important; }
+html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] [data-testid="cell-frame-container"] > :first-child {
+  flex: 0 0 auto !important; width: auto !important; padding-left: 0 !important; padding-right: 0 !important; margin: 0 !important; justify-content: center !important;
+}
 html[data-wcs-active] #pane-side { overflow-x: hidden !important; scrollbar-width: thin; }
 html[data-wcs-active] [data-wcs-position] { position: relative !important; }
 html[data-wcs-active] [data-wcs-row] { min-width: 0 !important; }
