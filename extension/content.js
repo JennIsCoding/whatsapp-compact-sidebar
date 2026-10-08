@@ -19,6 +19,7 @@
   const records = new Map();
   const hidden = new Set();
   const columns = new Set();
+  const shrinkers = new Set();
   const observer = new MutationObserver(schedule);
 
   function observe() {
@@ -60,6 +61,18 @@
     button.style.setProperty('--wcs-archived-shift', `${shift}px`);
   }
 
+  // Let the conversation shrink with the window: WhatsApp gives the chat and the app wrappers a
+  // minimum width, which caused horizontal scrolling in narrow windows. Only the path from the
+  // conversation (#main) up to the page is touched.
+  function allowShrink() {
+    for (const el of shrinkers) el.removeAttribute('data-wcs-shrink');
+    shrinkers.clear();
+    const main = document.querySelector('#main');
+    for (let node = main; node && node !== document.documentElement; node = node.parentElement) {
+      node.setAttribute('data-wcs-shrink', ''); shrinkers.add(node);
+    }
+  }
+
   function restore() {
     archivedShift = 0;
     document.querySelectorAll(ARCHIVED).forEach(el => el.style.removeProperty('--wcs-archived-shift'));
@@ -70,6 +83,8 @@
     hidden.clear();
     for (const el of columns) el.removeAttribute('data-wcs-column');
     columns.clear();
+    for (const el of shrinkers) el.removeAttribute('data-wcs-shrink');
+    shrinkers.clear();
     column?.removeAttribute('data-wcs-column-outer');
     side?.removeAttribute('data-wcs-side');
   }
@@ -82,7 +97,9 @@
       const parent = candidate.parentElement;
       if (!parent || parent === document.body || parent.id === 'app' || parent.querySelector('#main')) break;
       const box = parent.getBoundingClientRect();
-      if (Math.abs(box.width - width) > 8 || box.width > innerWidth * 0.65) break;
+      // No "% of the window" limit: in narrow windows it stopped at the wrong wrapper and the list
+      // kept its full width, pushing the conversation off-screen.
+      if (Math.abs(box.width - width) > 8) break;
       candidate = parent;
     }
     return candidate;
@@ -207,6 +224,7 @@
         }
         rows.forEach(updateRow);
         alignArchived();
+        allowShrink();
       }
     } finally { observe(); }
   }

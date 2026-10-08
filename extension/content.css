@@ -16,6 +16,11 @@ html[data-wcs-active] [data-wcs-side] {
   padding-top: 8px !important;
 }
 html[data-wcs-active] [data-wcs-hide] { display: none !important; }
+/* The conversation shrinks with the window instead of forcing a horizontal scrollbar. */
+html[data-wcs-active] [data-wcs-shrink] { min-width: 0 !important; }
+/* On the root, "clip" counts as "hidden" (still scrollable by code), so the body does the clipping. */
+html[data-wcs-active] { overflow-x: hidden !important; }
+html[data-wcs-active] body { overflow-x: clip !important; }
 /* WhatsApp keeps a transparent drawer panel over the chat whose left border used to sit behind the
    wide list. With the narrow list it shows up as a vertical line across the conversation. */
 html[data-wcs-active] [data-testid="drawer-middle"] { border-left-color: transparent !important; }

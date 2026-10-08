@@ -78,6 +78,12 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     await page.setViewportSize({ width: 600, height: 800 });
     await page.waitForTimeout(200);
     assert.equal(await page.locator('.column').evaluate(el => el.getBoundingClientRect().width), 104);
+    // The conversation shrinks with the window: no horizontal scroll, chat ends at the window edge.
+    await page.setViewportSize({ width: 420, height: 800 });
+    await page.waitForTimeout(200);
+    assert.equal(await page.evaluate(() => { const s = document.scrollingElement; s.scrollLeft = 9999; return s.scrollLeft; }), 0);
+    assert.equal(await page.locator('.column').evaluate(el => el.getBoundingClientRect().width), 104);
+    assert.ok(await page.locator('#main').evaluate(el => el.getBoundingClientRect().right <= innerWidth + 0.5));
     await page.setViewportSize({ width: 1280, height: 800 });
     await active();
     await page.emulateMedia({ colorScheme: 'dark' });
