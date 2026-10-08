@@ -11,9 +11,10 @@
     name: 'span[title], [data-testid="cell-frame-title"]',
     unread: '[aria-label], [data-testid="icon-unread-count"], [data-icon="unread-count"]'
   };
-  const defaults = { enabled: true, compact: true, width: 88 };
+  // Always compact while enabled: no expand/collapse button or shortcut. To search or start a chat, disable it in the popup.
+  const defaults = { enabled: true, width: 88 };
   let settings = { ...defaults };
-  let side, pane, column, host, toggle, status;
+  let side, pane, column;
   let timer = 0;
   const records = new Map();
   const hidden = new Set();
@@ -138,29 +139,6 @@
     row.toggleAttribute('data-wcs-selected', selected);
   }
 
-  function ensureToolbar() {
-    if (host?.isConnected) return;
-    host = document.createElement('div');
-    host.id = 'wcs-toolbar';
-    host.setAttribute('data-wcs-owned', '');
-    const root = host.attachShadow({ mode: 'open' });
-    const style = document.createElement('style');
-    style.textContent = `
-      :host { position:fixed; z-index:10000; font:13px system-ui,sans-serif; }
-      button { display:block; width:38px; height:38px; border:1px solid #ffffff35;
-        border-radius:12px; background:#006b58; color:white; font:22px system-ui;
-        cursor:pointer; box-shadow:0 2px 9px #0003; }
-      button:hover { background:#00856b; } button:focus-visible { outline:3px solid #7ce9c4; outline-offset:3px; }
-      #status { display:none; }`;
-    toggle = document.createElement('button');
-    toggle.type = 'button';
-    toggle.addEventListener('click', () => save({ compact: !settings.compact }));
-    status = document.createElement('span');
-    status.id = 'status';
-    root.append(style, toggle, status);
-    document.body.append(host);
-  }
-
   function render() {
     timer = 0;
     observer.disconnect(); // Our own attributes/overlays must not cause observer loops.
@@ -173,11 +151,10 @@
         column = side ? findColumn(side) : null;
       }
       if (!settings.enabled || !side || !pane || !side.contains(pane) || !side.getClientRects().length) {
-        restore(); host?.remove(); return;
+        restore(); return;
       }
-      ensureToolbar();
       const rows = getRows();
-      const active = settings.compact && innerWidth >= 700 && rows.length > 0;
+      const active = rows.length > 0;
       if (!active) restore();
       else {
         document.documentElement.setAttribute('data-wcs-active', '');
@@ -197,7 +174,7 @@
           }
         }
         // Current WhatsApp puts the list header (title, new chat, menu) beside #side, inside the
-        // column. It does not fit in the compact width, so hide it too (» brings it back).
+        // column. It does not fit in the compact width, so hide it too (disabling the extension brings it back).
         for (let node = side; node !== column && node.parentElement; node = node.parentElement) {
           for (const sibling of node.parentElement.children) {
             if (sibling !== node && !sibling.querySelector('#main') && !sibling.hasAttribute('data-wcs-owned')) {
@@ -211,39 +188,17 @@
         }
         rows.forEach(updateRow);
       }
-      const box = side.getBoundingClientRect();
-      host.style.left = `${Math.max(4, active ? box.left + (settings.width - 38) / 2 : box.right - 48)}px`;
-      host.style.top = `${Math.max(4, box.top + 8)}px`;
-      toggle.textContent = active ? '»' : '«';
-      const label = settings.compact ? 'Expandir conversas' : 'Recolher conversas';
-      toggle.title = `${label} (Alt+Shift+C)`;
-      toggle.setAttribute('aria-label', label);
-      toggle.setAttribute('aria-expanded', String(!active));
-      status.textContent = active ? 'compact' : 'expanded';
     } finally { observe(); }
-  }
-
-  async function save(change) {
-    settings = { ...settings, ...change };
-    schedule();
-    try { await chrome.storage.local.set(change); }
-    catch { /* Extension reload: local controls still work until page refresh. */ }
   }
 
   function normalize(values) {
     return {
       enabled: values.enabled !== false,
-      compact: values.compact !== false,
       width: [80, 88, 104].includes(Number(values.width)) ? Number(values.width) : 88
     };
   }
 
   window.addEventListener('resize', schedule);
-  document.addEventListener('keydown', event => {
-    if (event.altKey && event.shiftKey && event.code === 'KeyC' && !event.repeat) {
-      event.preventDefault(); save({ compact: !settings.compact });
-    }
-  });
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local') return;
     const next = { ...settings };

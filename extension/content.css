@@ -13,7 +13,7 @@ html[data-wcs-active] [data-wcs-column-outer] {
 }
 html[data-wcs-active] [data-wcs-side] {
   box-sizing: border-box !important;
-  padding-top: 54px !important;
+  padding-top: 8px !important;
 }
 html[data-wcs-active] [data-wcs-hide] { display: none !important; }
 /* WhatsApp keeps a transparent drawer panel over the chat whose left border used to sit behind the

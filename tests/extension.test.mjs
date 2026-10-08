@@ -18,7 +18,7 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     await page.setContent(fixture);
     await page.evaluate(() => {
       const listeners = [];
-      const data = { enabled: true, compact: true, width: 88 };
+      const data = { enabled: true, width: 88 };
       window.chrome = { storage: {
         local: {
           get: async defaults => ({ ...defaults, ...data }),
@@ -61,22 +61,20 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     });
     await page.waitForFunction(() => document.querySelector('[data-contact="4"] .wcs-badge').textContent === '99+');
     assert.match(await page.locator('[data-contact="4"]').getAttribute('title'), /^Contato novo/);
-    await page.getByRole('button', { name: 'Expandir conversas', exact: true }).click();
-    await page.waitForFunction(() => !document.documentElement.hasAttribute('data-wcs-active'));
-    assert.equal(await page.locator('.column').evaluate(el => el.getBoundingClientRect().width), 370);
-    assert.equal(await page.locator('[data-testid="chatlist-header"]').isVisible(), true);
-    assert.equal(await page.locator('.wcs-avatar-overlay').count(), 0);
-    assert.equal(await page.locator('[data-contact="4"]').getAttribute('title'), null);
-    await page.screenshot({ path: new URL('test-results/expanded.png', root).pathname.replace(/^\/(\w:)/, '$1') });
+    // Always compact: no expand button, and the old shortcut does nothing.
+    assert.equal(await page.locator('#wcs-toolbar').count(), 0);
     await page.keyboard.press('Alt+Shift+KeyC');
-    await active();
+    await page.waitForTimeout(200);
+    assert.equal(await page.locator('html').getAttribute('data-wcs-active'), '');
     await page.locator('#pane-side').evaluate(el => { el.scrollTop = 720; });
     await page.locator('[data-contact="12"]').click();
     assert.equal(await page.locator('#contact').textContent(), 'Design');
     await page.evaluate(() => chrome.storage.local.set({ width: 104 }));
     await page.waitForFunction(() => document.querySelector('.column').getBoundingClientRect().width === 104);
+    // Narrow or resized windows stay compact (no 700 px cut-off any more).
     await page.setViewportSize({ width: 600, height: 800 });
-    await page.waitForFunction(() => !document.documentElement.hasAttribute('data-wcs-active'));
+    await page.waitForTimeout(200);
+    assert.equal(await page.locator('.column').evaluate(el => el.getBoundingClientRect().width), 104);
     await page.setViewportSize({ width: 1280, height: 800 });
     await active();
     await page.emulateMedia({ colorScheme: 'dark' });
@@ -86,7 +84,7 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
       const side = document.querySelector('#side');
       window.savedSide = side; side.remove();
     });
-    await page.waitForFunction(() => !document.querySelector('#wcs-toolbar'));
+    await page.waitForFunction(() => !document.documentElement.hasAttribute('data-wcs-active'));
     await page.evaluate(() => {
       // Use the original node: its host event handlers stay attached.
       document.querySelector('.column').append(window.savedSide);
@@ -103,7 +101,7 @@ test('unknown layouts are untouched; disabled mode and popup settings work', asy
     const page = await browser.newPage();
     await page.setContent('<main>Login / QR code</main>');
     await page.evaluate(() => {
-      const listeners = []; const data = { enabled: true, compact: true, width: 88 };
+      const listeners = []; const data = { enabled: true, width: 88 };
       window.chrome = { storage: { local: {
         get: async defaults => ({ ...defaults, ...data }),
         set: async values => { Object.assign(data, values); listeners.forEach(fn => fn(Object.fromEntries(Object.entries(values).map(([k,v]) => [k, {newValue:v}])), 'local')); }
@@ -111,7 +109,7 @@ test('unknown layouts are untouched; disabled mode and popup settings work', asy
     });
     await page.addStyleTag({ content: css }); await page.addScriptTag({ content: script });
     await page.waitForTimeout(150);
-    assert.equal(await page.locator('#wcs-toolbar').count(), 0);
+    assert.equal(await page.locator('html').getAttribute('data-wcs-active'), null);
     assert.equal(await page.locator('main').textContent(), 'Login / QR code');
     // Mount a sidebar after the initial login screen; mutation observer must pick it up.
     const app = fixture.match(/<div id="app">[\s\S]*?<script>/)[0].replace(/<script>$/, '');
@@ -120,7 +118,7 @@ test('unknown layouts are untouched; disabled mode and popup settings work', asy
     await page.addScriptTag({ content: fixtureJS });
     await page.waitForFunction(() => document.documentElement.hasAttribute('data-wcs-active'));
     await page.evaluate(() => chrome.storage.local.set({ enabled: false }));
-    await page.waitForFunction(() => !document.querySelector('#wcs-toolbar'));
+    await page.waitForFunction(() => !document.documentElement.hasAttribute('data-wcs-active'));
     assert.equal(await page.locator('[data-wcs-row]').count(), 0);
     assert.equal(await page.locator('[data-wcs-hide]').count(), 0);
     // Empty/changed chat list must fail open instead of leaving an unusable rail.
@@ -137,7 +135,7 @@ test('unknown layouts are untouched; disabled mode and popup settings work', asy
   } finally { await browser.close(); }
 });
 
-test('Manifest V3 loads in an isolated browser and persists the layout across reloads', async () => {
+test('Manifest V3 loads in an isolated browser and stays compact across reloads', async () => {
   const extension = fileURLToPath(new URL('extension/', root));
   const context = await chromium.launchPersistentContext('', {
     headless: true, channel: 'chromium',
@@ -151,13 +149,10 @@ test('Manifest V3 loads in an isolated browser and persists the layout across re
     const page = await context.newPage();
     await page.goto('https://web.whatsapp.com/');
     await page.waitForFunction(() => document.documentElement.hasAttribute('data-wcs-active'));
-    await page.getByRole('button', { name: 'Expandir conversas', exact: true }).click();
-    await page.waitForFunction(() => !document.documentElement.hasAttribute('data-wcs-active'));
+    assert.equal(await page.locator('#wcs-toolbar').count(), 0);
     await page.reload();
-    await page.getByRole('button', { name: 'Recolher conversas', exact: true }).waitFor();
-    assert.equal(await page.locator('html').getAttribute('data-wcs-active'), null);
-    await page.getByRole('button', { name: 'Recolher conversas', exact: true }).click();
     await page.waitForFunction(() => document.documentElement.hasAttribute('data-wcs-active'));
+    assert.equal(await page.locator('#wcs-toolbar').count(), 0);
   } finally { await context.close(); }
 });
 

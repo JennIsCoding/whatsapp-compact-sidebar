@@ -1,9 +1,9 @@
 'use strict';
-const fields = ['enabled', 'compact', 'width'];
+const fields = ['enabled', 'width'];
 const status = document.querySelector('#status');
 async function init() {
   try {
-    const values = await chrome.storage.local.get({ enabled: true, compact: true, width: 88 });
+    const values = await chrome.storage.local.get({ enabled: true, width: 88 });
     for (const key of fields) {
       const input = document.getElementById(key);
       if (input.type === 'checkbox') input.checked = values[key];

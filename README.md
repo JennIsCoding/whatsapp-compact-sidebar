@@ -2,7 +2,7 @@
 
 Extensão pessoal para deixar a lista de conversas do WhatsApp Web estreita, com avatares e contadores de mensagens não lidas sobre as fotos. Mais espaço para a conversa aberta.
 
-**Versão 0.1.1 — experimental.** Em uso no WhatsApp Web real (Chrome, tema escuro) desde outubro de 2026, além dos testes automáticos numa simulação com dados fictícios. Não é uma extensão oficial da Meta/WhatsApp.
+**Versão 0.2.0 — experimental.** Em uso no WhatsApp Web real (Chrome, tema escuro) desde outubro de 2026, além dos testes automáticos numa simulação com dados fictícios. Não é uma extensão oficial da Meta/WhatsApp.
 
 ![Lista compacta na simulação dos testes](docs/compact.png)
 
@@ -20,15 +20,13 @@ Não é necessário instalar Node, executar comandos ou pagar para usar. Mantenh
 
 ## Usar
 
-- A lateral começa compacta, com 88 px. Clique numa foto para abrir a conversa.
+- A lateral fica **sempre compacta**, com 88 px, em qualquer tamanho de janela. Clique numa foto para abrir a conversa.
 - O contador mostra o indicador de não lidas já fornecido pelo WhatsApp (não é uma notificação do sistema operacional). Quando não há quantidade, aparece uma bolinha.
 - Passe o mouse para ver o nome do contato e o indicador de não lidas.
-- No modo compacto, o cabeçalho da lista (título, nova conversa e menu ⋮), a pesquisa e os filtros ficam escondidos.
-- Clique em **»** para expandir e acessar pesquisa, filtros e demais controles originais. **«** recolhe novamente.
-- Atalho: **Alt + Shift + C**, dentro da página.
+- O cabeçalho da lista (título, nova conversa e menu ⋮), a pesquisa e os filtros ficam escondidos. Não há botão de expandir: para pesquisar, filtrar ou iniciar uma conversa nova, desmarque **Ativar extensão** no ícone dela e marque de novo depois.
 - No ícone da extensão, altere a largura (80, 88 ou 104 px) ou desative a personalização.
 - A barra nativa de navegação por ícones permanece disponível.
-- Em janelas menores que 700 px e em listas não reconhecidas/vazias, o layout original é preservado.
+- Em listas não reconhecidas ou vazias, o layout original é preservado.
 
 ## Privacidade
 
@@ -44,7 +42,7 @@ Estrutura do WhatsApp Web considerada (outubro de 2026): a coluna da lista empil
 
 Se o layout quebrar depois de uma atualização do WhatsApp, o jeito mais rápido de diagnosticar é olhar a estrutura da página (tags, `id`, `role`, `data-testid`, posição e tamanho dos ancestrais de `#side` e das linhas) no console do navegador e comparar com `tests/fixture.html`.
 
-Se algo ficar estranho: expanda com **Alt + Shift + C** ou desative a extensão no painel e recarregue a página. Para remover, vá a `chrome://extensions`, clique em **Remover** e recarregue o WhatsApp. Após atualizar os arquivos, clique em **Recarregar** no cartão da extensão e recarregue também o WhatsApp.
+Se algo ficar estranho: desative a extensão no painel e recarregue a página. Para remover, vá a `chrome://extensions`, clique em **Remover** e recarregue o WhatsApp. Após atualizar os arquivos, clique em **Recarregar** no cartão da extensão e recarregue também o WhatsApp.
 
 ## Desenvolvimento
 
@@ -66,9 +64,10 @@ Estrutura:
 - `tests/extension.test.mjs`: testes de comportamento.
 - `scripts/package.mjs`: copia os arquivos para `dist/extension` com `npm run package`.
 
-Já validado no WhatsApp real: lista compacta com fotos, troca de conversa, expandir/recolher e tema escuro. Ainda falta conferir: grupos sem foto, recebimento de mensagens e contadores ao vivo, conversas arquivadas, filtros, pesquisa, rolagem longa, tema claro e o painel de dados do contato aberto.
+Já validado no WhatsApp real: lista compacta com fotos, troca de conversa e tema escuro. Ainda falta conferir: grupos sem foto, recebimento de mensagens e contadores ao vivo, conversas arquivadas, filtros, pesquisa, rolagem longa, tema claro e o painel de dados do contato aberto.
 
 ## Histórico
 
+- **0.2.0** — Lista sempre compacta: saem o botão de expandir/recolher, o atalho Alt + Shift + C, a opção "Mostrar só as fotos" e o corte em janelas menores que 700 px (que desfazia o layout ao diminuir ou minimizar a janela).
 - **0.1.1** — Corrige o layout no WhatsApp Web atual: a lista ficava com 88 px de altura (só uma foto aparecia), o cabeçalho com o botão de nova conversa vazava por cima do chat e aparecia um risco vertical no meio da conversa.
 - **0.1.0** — Primeira versão: lateral compacta com avatares, contadores de não lidas, atalho Alt + Shift + C e painel de opções.

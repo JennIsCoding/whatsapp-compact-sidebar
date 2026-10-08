@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "WhatsApp Compact Sidebar",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Mais espaço para conversar: lateral com avatares e contadores de não lidas. Por JennIsCoding.",
   "permissions": ["storage"],
   "action": {
