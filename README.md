@@ -46,7 +46,7 @@ Se algo ficar estranho: desative a extensão no painel e recarregue a página. P
 
 ## Desenvolvimento
 
-Extensão Manifest V3, JavaScript e CSS sem bibliotecas em tempo de execução.
+Extensão Manifest V3, JavaScript e CSS sem bibliotecas em tempo de execução. Testes com Node (`node --test`) e Playwright (Chromium headless). Programação: Jenn ([JennIsCoding](https://github.com/JennIsCoding)).
 
 ```sh
 npm install
