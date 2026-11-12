@@ -7,7 +7,8 @@
   const SELECTORS = {
     side: '#side', pane: '#pane-side',
     rows: '[role="row"], [role="listitem"]',
-    avatar: 'img, [data-icon="default-user"], [data-icon="default-group"], [data-icon="default-community"]',
+    // Contacts with a status draw the photo as an SVG <image> inside the ring, not an <img>.
+    avatar: 'img, [data-testid="chatlist-status-ring"] image, [data-icon="default-user"], [data-icon="default-group"], [data-icon="default-community"]',
     name: 'span[title], [data-testid="cell-frame-title"]',
     unread: '[aria-label], [data-testid="icon-unread-count"], [data-icon="unread-count"]'
   };
@@ -170,7 +171,8 @@
       zone?.setAttribute('data-wcs-avatar-zone', '');
       record.zone = zone;
     }
-    const src = source?.tagName === 'IMG' ? source.getAttribute('src') : null;
+    const src = source?.tagName === 'IMG' ? source.getAttribute('src')
+      : source?.tagName === 'image' ? (source.getAttribute('href') || source.getAttribute('xlink:href')) : null;
     const safeSrc = src && /^(https:|blob:|data:image\/)/i.test(src) ? src : null;
     const signature = `${safeSrc || ''}|${name}`;
     if (record.signature !== signature) {

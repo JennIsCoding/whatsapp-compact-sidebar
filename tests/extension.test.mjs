@@ -48,6 +48,8 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     // Rows that start at different x positions still put every avatar on the same line.
     const c0 = await centre('[data-contact="0"] .wcs-avatar');
     for (const i of [1, 2, 3, 5]) assert.ok(Math.abs(await centre(`[data-contact="${i}"] .wcs-avatar`) - c0) <= 1);
+    // Contacts with a status draw the photo as an SVG <image> inside a ring: still copied to the overlay.
+    assert.equal(await page.locator('[data-contact="2"] .wcs-avatar img').count(), 1);
     // Clicking the photo of a contact with a status opens the chat, not the status viewer.
     await page.locator('[data-contact="2"]').click();
     assert.equal(await page.locator('#contact').textContent(), 'Lucas');

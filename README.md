@@ -2,7 +2,7 @@
 
 Extensão pessoal para deixar a lista de conversas do WhatsApp Web estreita, com avatares e contadores de mensagens não lidas sobre as fotos. Mais espaço para a conversa aberta.
 
-**Versão 0.2.1 — experimental.** Em uso no WhatsApp Web real (Chrome, tema escuro) desde outubro de 2026, além dos testes automáticos numa simulação com dados fictícios. Não é uma extensão oficial da Meta/WhatsApp.
+**Versão 0.2.2 — experimental.** Em uso no WhatsApp Web real (Chrome, tema escuro) desde outubro de 2026, além dos testes automáticos numa simulação com dados fictícios. Não é uma extensão oficial da Meta/WhatsApp.
 
 ![Lista compacta na simulação dos testes](docs/compact.png)
 
