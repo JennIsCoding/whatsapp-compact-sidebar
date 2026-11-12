@@ -2,7 +2,7 @@
 
 Extensão pessoal para deixar a lista de conversas do WhatsApp Web estreita, com avatares e contadores de mensagens não lidas sobre as fotos. Mais espaço para a conversa aberta.
 
-**Versão 0.2.0 — experimental.** Em uso no WhatsApp Web real (Chrome, tema escuro) desde outubro de 2026, além dos testes automáticos numa simulação com dados fictícios. Não é uma extensão oficial da Meta/WhatsApp.
+**Versão 0.2.1 — experimental.** Em uso no WhatsApp Web real (Chrome, tema escuro) desde outubro de 2026, além dos testes automáticos numa simulação com dados fictícios. Não é uma extensão oficial da Meta/WhatsApp.
 
 ![Lista compacta na simulação dos testes](docs/compact.png)
 
@@ -20,7 +20,7 @@ Não é necessário instalar Node, executar comandos ou pagar para usar. Mantenh
 
 ## Usar
 
-- A lateral fica **sempre compacta**, com 88 px, em qualquer tamanho de janela. Clique numa foto para abrir a conversa.
+- A lateral fica **sempre compacta**, com 88 px, em qualquer tamanho de janela. Clique numa foto para abrir a conversa (mesmo de quem tem status: o clique abre o chat, não os stories).
 - O contador mostra o indicador de não lidas já fornecido pelo WhatsApp (não é uma notificação do sistema operacional). Quando não há quantidade, aparece uma bolinha.
 - Passe o mouse para ver o nome do contato e o indicador de não lidas.
 - O cabeçalho da lista (título, nova conversa e menu ⋮), a pesquisa e os filtros ficam escondidos. Não há botão de expandir: para pesquisar, filtrar ou iniciar uma conversa nova, desmarque **Ativar extensão** no ícone dela e marque de novo depois.

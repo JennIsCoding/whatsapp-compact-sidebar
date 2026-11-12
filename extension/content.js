@@ -35,6 +35,7 @@
 
   function cleanRow(row, record) {
     record.overlay.remove();
+    record.zone?.removeAttribute('data-wcs-avatar-zone');
     row.removeAttribute('data-wcs-row');
     row.removeAttribute('data-wcs-position');
     row.removeAttribute('data-wcs-selected');
@@ -47,15 +48,25 @@
   const ARCHIVED = '[data-testid="chatlist-panel-archived-button"]';
   let archivedShift = 0;
 
-  // Centre the "Arquivadas" icon on the same line as the avatars. WhatsApp's own margins and
-  // paddings around it change between versions, so measure instead of hard-coding them.
-  function alignArchived() {
+  // Centre every avatar (and the "Arquivadas" icon) on the same vertical line: the middle of the
+  // list. WhatsApp's rows don't all start at the same x (status rings, margins, versions), so a
+  // plain "centre inside the row" left them zig-zagging. Measure instead of hard-coding.
+  function alignAll() {
+    const box = pane.getBoundingClientRect();
+    if (!box.width) return;
+    const target = box.left + pane.clientWidth / 2;
+    const centre = el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; };
+    for (const record of records.values()) {
+      if (!record.avatar.isConnected || !record.avatar.getClientRects().length) continue;
+      const shift = Math.round((record.shift + target - centre(record.avatar)) * 10) / 10;
+      if (Math.abs(shift - record.shift) < 0.5) continue;
+      record.shift = shift;
+      record.overlay.style.transform = shift ? `translateX(${shift}px)` : '';
+    }
     const button = pane.querySelector(ARCHIVED);
     const icon = button?.querySelector('svg, [data-icon]');
-    const avatar = [...records.values()].map(r => r.avatar).find(a => a.isConnected && a.getClientRects().length);
-    if (!button || !icon || !avatar) return;
-    const centre = el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; };
-    const shift = Math.round((archivedShift + centre(avatar) - centre(icon)) * 10) / 10;
+    if (!button || !icon) return;
+    const shift = Math.round((archivedShift + target - centre(icon)) * 10) / 10;
     if (Math.abs(shift - archivedShift) < 0.5) return;
     archivedShift = shift;
     button.style.setProperty('--wcs-archived-shift', `${shift}px`);
@@ -135,7 +146,7 @@
       const badge = document.createElement('span');
       badge.className = 'wcs-badge';
       overlay.append(avatar, badge);
-      record = { overlay, avatar, badge, signature: '', originalTitle: row.getAttribute('title'), appliedTitle: null };
+      record = { overlay, avatar, badge, zone: null, shift: 0, signature: '', originalTitle: row.getAttribute('title'), appliedTitle: null };
       records.set(row, record);
       if (getComputedStyle(row).position === 'static') row.setAttribute('data-wcs-position', '');
       row.setAttribute('data-wcs-row', '');
@@ -146,6 +157,19 @@
     const source = [...row.querySelectorAll(SELECTORS.avatar)].find(el => !el.closest('[data-wcs-owned]'));
     const nameEl = row.querySelector(SELECTORS.name);
     const name = nameEl?.getAttribute('title') || nameEl?.textContent?.trim() || 'Conversa';
+    // Clicking the native photo of a contact with a status opens the status viewer. Make the photo
+    // area click-through so the click lands on the row itself, which opens the chat.
+    let zone = null;
+    if (source && nameEl) {
+      zone = source;
+      while (zone.parentElement && zone.parentElement !== row && !zone.parentElement.contains(nameEl)) zone = zone.parentElement;
+      if (zone.contains(nameEl)) zone = null;
+    }
+    if (record.zone !== zone) {
+      record.zone?.removeAttribute('data-wcs-avatar-zone');
+      zone?.setAttribute('data-wcs-avatar-zone', '');
+      record.zone = zone;
+    }
     const src = source?.tagName === 'IMG' ? source.getAttribute('src') : null;
     const safeSrc = src && /^(https:|blob:|data:image\/)/i.test(src) ? src : null;
     const signature = `${safeSrc || ''}|${name}`;
@@ -223,7 +247,7 @@
           if (!current.has(row)) { cleanRow(row, record); records.delete(row); }
         }
         rows.forEach(updateRow);
-        alignArchived();
+        alignAll();
         allowShrink();
       }
     } finally { observe(); }

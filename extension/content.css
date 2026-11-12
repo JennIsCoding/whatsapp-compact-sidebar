@@ -33,7 +33,7 @@ html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] [data-testi
 html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] [data-testid="cell-frame-container"] > :not(:first-child) { display: none !important; }
 html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] [data-testid="cell-frame-container"] > :first-child {
   flex: 0 0 auto !important; width: auto !important; padding-left: 0 !important; padding-right: 0 !important; margin: 0 !important; justify-content: center !important;
-  /* Fine alignment with the avatars, measured in content.js (alignArchived). */
+  /* Fine alignment with the avatars, measured in content.js (alignAll). */
   transform: translateX(var(--wcs-archived-shift, 0px));
 }
 html[data-wcs-active] [data-testid="chatlist-panel-archived-button"] [data-testid="cell-frame-container"] > :first-child > * {
@@ -44,10 +44,14 @@ html[data-wcs-active] [data-wcs-position] { position: relative !important; }
 html[data-wcs-active] [data-wcs-row] { min-width: 0 !important; }
 /* Retain native hit targets, event handlers and accessibility labels. */
 html[data-wcs-active] [data-wcs-row] > :not([data-wcs-owned]) { opacity: 0 !important; }
+/* The native photo opens the status viewer when clicked; let the click fall through to the row (opens the chat). */
+html[data-wcs-active] [data-wcs-avatar-zone],
+html[data-wcs-active] [data-wcs-avatar-zone] * { pointer-events: none !important; }
 .wcs-avatar-overlay {
   position: absolute !important; inset: 0 !important;
   display: flex !important; align-items: center !important; justify-content: center !important;
   pointer-events: none !important; z-index: 2;
+  /* translateX set per row by content.js (alignAll) so every avatar sits on the same line. */
 }
 .wcs-avatar {
   position: relative; display: grid; place-items: center;

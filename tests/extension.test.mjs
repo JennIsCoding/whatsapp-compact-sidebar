@@ -45,6 +45,13 @@ test('compact layout, native clicks, unread changes, recycled rows and restore',
     // The archived button shows only its icon, centred in the list like the avatars.
     const centre = sel => page.locator(sel).evaluate(el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; });
     assert.ok(Math.abs(await centre('#archived-icon') - await centre('[data-contact="0"] .wcs-avatar')) <= 1);
+    // Rows that start at different x positions still put every avatar on the same line.
+    const c0 = await centre('[data-contact="0"] .wcs-avatar');
+    for (const i of [1, 2, 3, 5]) assert.ok(Math.abs(await centre(`[data-contact="${i}"] .wcs-avatar`) - c0) <= 1);
+    // Clicking the photo of a contact with a status opens the chat, not the status viewer.
+    await page.locator('[data-contact="2"]').click();
+    assert.equal(await page.locator('#contact').textContent(), 'Lucas');
+    assert.equal(await page.evaluate(() => document.body.dataset.status), undefined);
     assert.equal(await page.locator('[data-contact="1"] .wcs-badge').textContent(), '2');
     assert.equal(await page.locator('[data-contact="0"]').evaluate(el => el.getBoundingClientRect().height), 72);
     assert.equal(await page.locator('#main').evaluate(el => el.getBoundingClientRect().width), 1132);
